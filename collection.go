@@ -14,9 +14,13 @@ type CollectionOperator struct {
 }
 
 // Bucket 获取与当前 collection 同名的 bucket
-func (o *CollectionOperator) Bucket() (*gridfs.Bucket, error) {
+func (o *CollectionOperator) Bucket() (*BucketOperator, error) {
 	opt := options.GridFSBucket().SetName(o.Name())
-	return gridfs.NewBucket(o.Database(), opt)
+	bucket, err := gridfs.NewBucket(o.Database(), opt)
+	if err != nil {
+		return nil, err
+	}
+	return &BucketOperator{Bucket: bucket}, nil
 }
 
 // InsertMany 批量插入
@@ -50,7 +54,7 @@ func (o *CollectionOperator) UpdateID(id interface{}, filter interface{}, update
 	return o.Collection.UpdateOne(nil, bson.M{"_id": oid}, update, opts...)
 }
 
-func (o CollectionOperator) Exist(filter interface{}, opts ...*options.CountOptions) bool {
+func (o *CollectionOperator) Exist(filter interface{}, opts ...*options.CountOptions) bool {
 	count, err := o.Collection.CountDocuments(nil, filter, opts...)
 	return err == nil && count > 0
 }

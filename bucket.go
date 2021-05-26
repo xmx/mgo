@@ -12,11 +12,7 @@ type BucketOperator struct {
 // File 根据文件ID获取文件的信息
 func (o *BucketOperator) File(id interface{}) (*gridfs.File, error) {
 	oid := parseID(id)
-	cursor, err := o.Bucket.GetFilesCollection().Find(nil, bson.E{Key: "_id", Value: oid})
-	if err != nil {
-		return nil, err
-	}
-	f := &gridfs.File{}
-	err = cursor.Decode(f)
-	return f, err
+	file := &gridfs.File{}
+	err := o.Bucket.GetFilesCollection().FindOne(nil, bson.M{"_id": oid}).Decode(file)
+	return file, err
 }

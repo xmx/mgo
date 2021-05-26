@@ -49,7 +49,7 @@ func (o *CollectionOperator) Upsert(filter interface{}, replacement interface{},
 }
 
 // UpdateID 通过ID更新记录
-func (o *CollectionOperator) UpdateID(id interface{}, filter interface{}, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
+func (o *CollectionOperator) UpdateID(id interface{}, update interface{}, opts ...*options.UpdateOptions) (*mongo.UpdateResult, error) {
 	oid := parseID(id)
 	return o.Collection.UpdateOne(nil, bson.M{"_id": oid}, update, opts...)
 }
@@ -66,7 +66,7 @@ func (o *CollectionOperator) FindID(id, result interface{}, opts ...*options.Fin
 }
 
 // FindBatchID 通过ID批量查找
-func (o CollectionOperator) FindBatchID(ids []string, result interface{}, opts ...*options.FindOptions) error {
+func (o *CollectionOperator) FindBatchID(ids []string, result interface{}, opts ...*options.FindOptions) error {
 	oid := parseIDs(ids)
 	cursor, err := o.Collection.Find(nil, bson.M{"_id": bson.M{"$in": oid}}, opts...)
 	if err != nil {

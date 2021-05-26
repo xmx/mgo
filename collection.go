@@ -14,9 +14,12 @@ type CollectionOperator struct {
 }
 
 // Bucket 获取与当前 collection 同名的 bucket
-func (o *CollectionOperator) Bucket() (*BucketOperator, error) {
+func (o *CollectionOperator) Bucket(opts ...*options.BucketOptions) (*BucketOperator, error) {
 	opt := options.GridFSBucket().SetName(o.Name())
-	bucket, err := gridfs.NewBucket(o.Database(), opt)
+	ops := make([]*options.BucketOptions, 0, len(opts)+1)
+	ops = append(ops, opt) // 要将这个opt放在前面, 传入的opts在拼后面优先级高
+	ops = append(ops, opts...)
+	bucket, err := gridfs.NewBucket(o.Database(), ops...)
 	if err != nil {
 		return nil, err
 	}

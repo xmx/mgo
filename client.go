@@ -12,8 +12,11 @@ type ClientOperator struct {
 
 // New creates a new Client and then initializes it using the Connect method. This is equivalent to calling
 // NewClient followed by Client.Connect.
-func New(opts ...*options.ClientOptions) (*ClientOperator, error) {
-	conn, err := mongo.Connect(nil, opts...)
+func New(opt *options.ClientOptions, opts ...*options.ClientOptions) (*ClientOperator, error) {
+	ops := make([]*options.ClientOptions, 0, len(opts)+1)
+	ops = append(ops, opt)
+	ops = append(ops, opts...)
+	conn, err := mongo.Connect(nil, ops...)
 	if err != nil {
 		return nil, err
 	}
